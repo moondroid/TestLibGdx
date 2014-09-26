@@ -1,7 +1,7 @@
 package com.mygdx.game.pong;
 
 /**
- * Created by Marco on 25/09/2014.
+ * Created by marco.granatiero on 26/09/2014.
  */
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -12,30 +12,25 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
-public class MainMenuScreen implements Screen {
-
+public class Help2Screen implements Screen {
     OrthographicCamera guiCam;
     SpriteBatch batcher;
-    Rectangle newgameBounds;
-    Rectangle aboutBounds;
-    Rectangle helpBounds;
+    Rectangle backBounds;
     Vector3 touchPoint;
 
     final Game game;
 
-    public MainMenuScreen(Game game){
+    public Help2Screen(Game game){
 
         this.game = game;
 
         guiCam = new OrthographicCamera(480,320);
         guiCam.position.set(480 / 2, 320 / 2, 0);
         batcher = new SpriteBatch();
-        newgameBounds = new Rectangle(157, 125, 170, 34);
-        helpBounds = new Rectangle(157, 75, 168, 36);
-        aboutBounds = new Rectangle(157, 23, 161, 39);
+        backBounds = new Rectangle(350, 10, 121, 19);
         touchPoint = new Vector3();
-
     }
+
 
 
     @Override
@@ -43,19 +38,9 @@ public class MainMenuScreen implements Screen {
         if (Gdx.input.justTouched()){
             guiCam.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
 
-            if(OverlapTester.pointInRectangle(newgameBounds, touchPoint.x, touchPoint.y)){
+            if(OverlapTester.pointInRectangle(backBounds, touchPoint.x, touchPoint.y)){
                 Assets.playSound(Assets.bounceSound);
-                //game.setScreen(new GameScreen(game));
-                return;
-            }
-            if (OverlapTester.pointInRectangle(helpBounds, touchPoint.x, touchPoint.y)){
-                Assets.playSound(Assets.bounceSound);
-                game.setScreen(new Help1Screen(game));
-                return;
-            }
-            if (OverlapTester.pointInRectangle(aboutBounds, touchPoint.x, touchPoint.y)){
-                Assets.playSound(Assets.bounceSound);
-                //game.setScreen(new AboutScreen(game));
+                game.setScreen(new MainMenuScreen(game));
                 return;
             }
         }
@@ -76,7 +61,7 @@ public class MainMenuScreen implements Screen {
 
         batcher.disableBlending();
         batcher.begin();
-        batcher.draw(Assets.mainMenuScreenRegion, 0, 0, 480, 320);
+        batcher.draw(Assets.help2ScreenRegion, 0, 0, 480, 320);
         batcher.end();
     }
 
@@ -87,17 +72,19 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void pause() {
+        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void resume() {
+        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void dispose() {
+        // TODO Auto-generated method stub
 
     }
-
 }

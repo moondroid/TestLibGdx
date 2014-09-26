@@ -35,6 +35,17 @@ public class Help1Screen implements Screen {
 
     @Override
     public void render(float delta) {
+
+        GL20 gl = Gdx.gl;
+        gl.glClearColor(1, 0, 0, 1);
+        gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        guiCam.update();
+        batcher.setProjectionMatrix(guiCam.combined);
+        batcher.disableBlending();
+        batcher.begin();
+        batcher.draw(Assets.help1ScreenRegion, 0, 0, 480, 320);
+        batcher.end();
+        
         if (Gdx.input.justTouched()) {
             guiCam.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
 
@@ -53,15 +64,7 @@ public class Help1Screen implements Screen {
 
     @Override
     public void show() {
-        GL20 gl = Gdx.gl;
-        gl.glClearColor(1, 0, 0, 1);
-        gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        guiCam.update();
-        batcher.setProjectionMatrix(guiCam.combined);
-        batcher.disableBlending();
-        batcher.begin();
-        batcher.draw(Assets.help1ScreenRegion, 0, 0, 480, 320);
-        batcher.end();
+
     }
 
     @Override

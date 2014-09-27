@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+
 public class Assets {
     public static Texture textureatlas;
     public static TextureRegion gameScreenBackgroundRegion;
@@ -39,7 +40,9 @@ public class Assets {
         paddle = new TextureRegion(textureatlas, 480,0,10,64);
         ball = new TextureRegion(textureatlas, 526,46,10,10);
 
-        font = new BitmapFont(Gdx.files.internal("data/font.fnt"), Gdx.files.internal("data/font.png"), false);
+        //font = new BitmapFont(Gdx.files.internal("data/font.fnt"), Gdx.files.internal("data/font.png"), false);
+        font = new BitmapFont();
+        //font.setScale(0.1f);
 
         bounceSound = Gdx.audio.newSound(Gdx.files.internal("data/ball_bump.wav"));
     }
@@ -48,4 +51,14 @@ public class Assets {
         sound.play(1);
     }
 
+//    private static BitmapFont makeScoreFont() {
+//        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(
+//                Gdx.files.internal("fonts/LiberationMono-Regular.ttf"));
+//        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+//        parameter.size = 55;
+//        BitmapFont titleFont = generator.generateFont(parameter);
+//        generator.dispose();
+//
+//        return titleFont;
+//    }
 }

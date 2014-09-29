@@ -5,14 +5,21 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 
 /**
  * Created by Marco on 29/09/2014.
  */
 public class GameScreen extends InputAdapter implements Screen {
 
-
     final Game game;
+    private SpriteBatch batch;
+    private OrthographicCamera camera;
+    private World world;
+
 
     public GameScreen(Game game){
         this.game = game;
@@ -32,6 +39,11 @@ public class GameScreen extends InputAdapter implements Screen {
 
     @Override
     public void show() {
+        Gdx.input.setInputProcessor(this);
+
+        this.batch = new SpriteBatch();
+        this.world = new World(new Vector2(0.0f, 0.0f), true);
+        this.camera = new OrthographicCamera(480, 800);
 
     }
 
@@ -54,4 +66,24 @@ public class GameScreen extends InputAdapter implements Screen {
     public void dispose() {
 
     }
+
+
+    /*
+    * InputAdapter INTERFACE
+    */
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
 }

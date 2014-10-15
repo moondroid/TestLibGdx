@@ -1,2 +1,2 @@
-include ':airhockey'
+include ':airhockey', ':bouncingball'
 include 'android', 'core', 'pong'

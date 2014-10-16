@@ -16,6 +16,8 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
+import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 
 /**
  * Created by marco.granatiero on 14/10/2014.
@@ -36,15 +38,19 @@ public class BouncingBallScreen implements Screen, InputProcessor {
     /* Use a long to store current time and calculate user touches duration */
     private Long timer;
     private Vector2 touchDownVector;
-    private Vector3 testPoint = new Vector3();
+    private Vector3 touchPosition = new Vector3();
+
+    /*
+	 * Used to define a mouse joint for a body. This point will track a
+	 * specified world point.
+	 */
+    private MouseJoint mouseJoint;
+    private MouseJointDef mouseJointDef;
 
     /* Define a body to later apply impulses to it */
     private Body ball;
 
-    /**
-     * a hit body *
-     */
-    Body hitBody = null;
+
 
     public BouncingBallScreen(Game game) {
         this.game = game;
@@ -107,7 +113,10 @@ public class BouncingBallScreen implements Screen, InputProcessor {
         Box2DFactory.createBody(world, BodyDef.BodyType.StaticBody, fixtureDef, new Vector2(6.5f, 0));
 
 		/* Create the walls */
-        Box2DFactory.createWalls(world, camera.viewportWidth, camera.viewportHeight, 1);
+        Body walls = Box2DFactory.createWalls(world, camera.viewportWidth, camera.viewportHeight, 1);
+
+        /* Define the mouse joint. We use walls as the first body of the joint */
+        createMouseJointDefinition(walls);
     }
 
     @Override
@@ -164,34 +173,37 @@ public class BouncingBallScreen implements Screen, InputProcessor {
         //Gdx.app.debug("BouncingBallScreen", "touchDown: "+screenX+", "+screenY);
 
         // translate the mouse coordinates to world coordinates
-        testPoint.set(screenX, screenY, 0);
-        camera.unproject(testPoint);
+        touchPosition.set(screenX, screenY, 0);
+        camera.unproject(touchPosition);
 
-        hitBody = null;
-        world.QueryAABB(new QueryCallback() {
+/*
+		 * Define a new QueryCallback. This callback will be used in
+		 * world.QueryAABB method.
+		 */
+        QueryCallback queryCallback = new QueryCallback() {
 
-                            @Override
-                            public boolean reportFixture(Fixture fixture) {
+            @Override
+            public boolean reportFixture(Fixture fixture) {
+                boolean testResult;
 
-                                if (fixture.getBody() == ball) {
-                                    hitBody = fixture.getBody();
-                                    return false;
-                                } else {
-                                    return true;
-                                }
-                                // if the hit point is inside the fixture of the body
-                                // we report it
-//                                if (fixture.testPoint(testPoint.x, testPoint.y)) {
-//                                    hitBody = fixture.getBody();
-//                                    return false;
-//                                } else {
-//                                    hitBody = null;
-//                                    return true;
-//                                }
-                            }
-                        },
+				/*
+				 * If the hit point is inside the fixture of the body, create a
+				 * new MouseJoint.
+				 */
+                if (testResult = fixture.testPoint(touchPosition.x,
+                        touchPosition.y)) {
+                    mouseJointDef.bodyB = fixture.getBody();
+                    mouseJointDef.target.set(touchPosition.x, touchPosition.y);
+                    mouseJoint = (MouseJoint) world.createJoint(mouseJointDef);
+                }
 
-                testPoint.x - 0.1f, testPoint.y - 0.1f, testPoint.x + 0.1f, testPoint.y + 0.1f);
+                return testResult;
+            }
+        };
+
+        world.QueryAABB(queryCallback,
+                touchPosition.x - 0.1f, touchPosition.y - 0.1f, touchPosition.x + 0.1f, touchPosition.y + 0.1f);
+
 
         return true;
     }
@@ -211,25 +223,40 @@ public class BouncingBallScreen implements Screen, InputProcessor {
 
         Gdx.app.debug("BouncingBallScreen", "touchUp: " + impulse);
 
-		/*
-		 * The impulse is applied to the body's center, and only on the Y axis.
-		 * It will aggregate the impulse to the current Y speed, so, if the
-		 * object is falling the impulse will be the difference between the
-		 * object speed and the given value.
-		 */
-//        ball.applyLinearImpulse(new Vector2(0, impulse), ball.getWorldCenter(),
-//                true);
+        /* Whether the input was processed */
+        boolean processed = false;
 
-        if(hitBody!=null){
+
+        /* If a MouseJoint is defined, destroy it */
+        if (mouseJoint != null) {
+            world.destroyJoint(mouseJoint);
+            mouseJoint = null;
+            /*
+		    * The impulse is applied to the body's center.
+		    */
             ball.applyLinearImpulse(touchMoveVector.scl(impulse), ball.getWorldCenter(), true);
+            processed = true;
         }
 
-        return true;
+        return processed;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
+        /* Whether the input was processed */
+        boolean processed = false;
+
+		/*
+		 * If a MouseJoint is defined, update its target with current position.
+		 */
+        if (mouseJoint != null) {
+
+			/* Translate camera point to world point */
+            camera.unproject(touchPosition.set(screenX, screenY, 0));
+            mouseJoint.setTarget(new Vector2(touchPosition.x, touchPosition.y));
+        }
+
+        return processed;
     }
 
     @Override
@@ -240,5 +267,19 @@ public class BouncingBallScreen implements Screen, InputProcessor {
     @Override
     public boolean scrolled(int amount) {
         return false;
+    }
+
+
+    /**
+     * Creates the MouseJoint definition.
+     *
+     * @param body
+     *            First body of the joint (i.e. ground, walls, etc.)
+     */
+    private void createMouseJointDefinition(Body body) {
+        mouseJointDef = new MouseJointDef();
+        mouseJointDef.bodyA = body;
+        mouseJointDef.collideConnected = true;
+        mouseJointDef.maxForce = 500;
     }
 }

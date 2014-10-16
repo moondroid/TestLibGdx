@@ -10,8 +10,8 @@ public class BouncingBallGame extends Game {
 
         Gdx.app.setLogLevel(Application.LOG_DEBUG);
 
-        //this.setScreen(new BouncingBallScreen(this));
-        this.setScreen(new TideMapScreen(this));
+        this.setScreen(new BouncingBallScreen(this));
+        //this.setScreen(new TideMapScreen(this));
     }
 
     @Override

@@ -45,6 +45,8 @@ public class GameScreen extends InputAdapter implements Screen {
     private Body invisibleWalls;
 
 
+    private Body ball;
+
     public GameScreen(Game game){
         this.game = game;
     }
@@ -76,7 +78,7 @@ public class GameScreen extends InputAdapter implements Screen {
         Gdx.input.setInputProcessor(this);
 
         this.batch = new SpriteBatch();
-        this.world = new World(new Vector2(0.0f, 0.0f), true);
+        this.world = new World(new Vector2(0.0f, -9.8f), true);
         this.camera = new OrthographicCamera(Utils.getWidth(), Utils.getHeight());
 
         this.cornerLineLeftUp = Box2DFactory.createCornerLineLeftUp(this.world);
@@ -100,6 +102,9 @@ public class GameScreen extends InputAdapter implements Screen {
 
         this.invisibleWalls = Box2DFactory.createInvisibleWalls(this.world);
 
+
+        this.ball = Box2DFactory.createBall(this.world);
+        ball.setLinearVelocity(new Vector2(0.5f, 0f));
     }
 
     @Override

@@ -1,10 +1,13 @@
 package com.mygdx.game.airhockey;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 
 public class AirHockey extends Game {
     @Override
     public void create() {
+        Gdx.app.setLogLevel(Application.LOG_DEBUG);
         this.setScreen(new GameScreen(this));
     }
 

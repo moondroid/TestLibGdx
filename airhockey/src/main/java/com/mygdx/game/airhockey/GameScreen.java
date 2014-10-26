@@ -11,16 +11,22 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 
+import java.awt.event.ContainerListener;
+
 /**
  * Created by Marco on 29/09/2014.
  */
-public class GameScreen extends InputAdapter implements Screen {
+public class GameScreen extends InputAdapter implements Screen, ContactListener {
 
     final Game game;
     /* Use Box2DDebugRenderer, which is a model renderer for debug purposes */
@@ -97,6 +103,8 @@ public class GameScreen extends InputAdapter implements Screen {
 
         this.batch = new SpriteBatch();
         this.world = new World(new Vector2(0.0f, 0.0f), true);
+        world.setContactListener(this);
+
         this.camera = new OrthographicCamera(Utils.getWidth(), Utils.getHeight());
 
         this.cornerLineLeftUp = Box2DFactory.createCornerLineLeftUp(this.world);
@@ -122,7 +130,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
 
         this.ball = Box2DFactory.createBall(this.world);
-        ball.setLinearVelocity(new Vector2(0.5f, -1.0f));
+        //ball.setLinearVelocity(new Vector2(0.5f, -1.0f));
 
         this.player = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, -Utils.getHalfHeight()/2.0f));
         this.computer = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, Utils.getHalfHeight()/2.0f));
@@ -198,6 +206,7 @@ public class GameScreen extends InputAdapter implements Screen {
         return true;
     }
 
+    @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         /* Whether the input was processed */
         boolean processed = false;
@@ -215,7 +224,7 @@ public class GameScreen extends InputAdapter implements Screen {
         return processed;
     }
 
-
+    @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         /* Whether the input was processed */
         boolean processed = false;
@@ -231,11 +240,54 @@ public class GameScreen extends InputAdapter implements Screen {
         return processed;
     }
 
+
+
     private void createMouseJointDefinition(Body body) {
         mouseJointDef = new MouseJointDef();
         mouseJointDef.bodyA = body;
         mouseJointDef.collideConnected = true;
         mouseJointDef.frequencyHz = 100;
         mouseJointDef.dampingRatio = 0.0f;
+    }
+
+    /*
+    * CONTACTLISTENER INTERFACE
+    */
+
+    @Override
+    public void beginContact(Contact contact) {
+        Body a=contact.getFixtureA().getBody();
+        Body b=contact.getFixtureB().getBody();
+
+        if (a == goalLineUp || b==goalLineUp){
+            //TODO
+            Gdx.app.debug("GameScreen.beginContact", "goalLineUp");
+            ball.setTransform(0, 0, 0);
+            ball.setLinearVelocity(new Vector2(0, 0));
+            ball.setAngularVelocity(0);
+        }
+
+        if (a == goalLineDown || b==goalLineDown){
+            //TODO
+            Gdx.app.debug("GameScreen.beginContact", "goalLineDown");
+            ball.setTransform(0, 0, 0);
+            ball.setLinearVelocity(new Vector2(0, 0));
+            ball.setAngularVelocity(0);
+        }
+    }
+
+    @Override
+    public void endContact(Contact contact) {
+
+    }
+
+    @Override
+    public void preSolve(Contact contact, Manifold oldManifold) {
+
+    }
+
+    @Override
+    public void postSolve(Contact contact, ContactImpulse impulse) {
+
     }
 }

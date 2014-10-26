@@ -30,6 +30,20 @@ public class GameScreen extends InputAdapter implements Screen {
     private Body cornerLineRightDown;
     private Body cornerLineRightUp;
 
+    private Body halfLine;
+    private Body leftLine;
+    private Body leftUpLine;
+    private Body rightLine;
+    private Body rightUpLine;
+
+    private Body rightGoalLine;
+    private Body leftGoalLine;
+
+    private Body goalLineDown;
+    private Body goalLineUp;
+
+    private Body invisibleWalls;
+
 
     public GameScreen(Game game){
         this.game = game;
@@ -69,6 +83,22 @@ public class GameScreen extends InputAdapter implements Screen {
         this.cornerLineLeftDown = Box2DFactory.createCornerLineLeftDown(this.world);
         this.cornerLineRightUp = Box2DFactory.createCornerLineRightUp(this.world);
         this.cornerLineRightDown = Box2DFactory.createCornerLineRightDown(this.world);
+
+        this.leftLine = Box2DFactory.createLeftLine(this.world);
+        this.rightLine = Box2DFactory.createRightLine(this.world);
+
+        this.rightUpLine = Box2DFactory.createGoalLineRightUp(this.world);
+        this.leftUpLine = Box2DFactory.createGoalLineLeftUp(this.world);
+
+        this.rightGoalLine = Box2DFactory.createGoalLineRight(this.world);
+        this.leftGoalLine = Box2DFactory.createGoalLineLeft(this.world);
+
+        this.halfLine = Box2DFactory.createHalfLine(this.world);
+
+        this.goalLineUp = Box2DFactory.createGoalLineUp(this.world);
+        this.goalLineDown = Box2DFactory.createGoalLineDown(this.world);
+
+        this.invisibleWalls = Box2DFactory.createInvisibleWalls(this.world);
 
     }
 

@@ -156,7 +156,6 @@ public class Box2DFactory {
     }
 
     public static Body createInvisibleWalls(World world) {
-        Utils utils = new Utils();
         Vector2[] vertices = new Vector2[5];
         vertices[0] = new Vector2(-Utils.getHalfWidth(), -Utils.getHalfHeight());
         vertices[1] = new Vector2(Utils.getHalfWidth(), -Utils.getHalfHeight());
@@ -184,12 +183,12 @@ public class Box2DFactory {
     }
 
     public static Body createRightLine(World world) {
-        Vector2[] rightLineVercites = new Vector2[2];
-        rightLineVercites[0] = new Vector2(0.0f, (-Utils.getHalfWidth()) + 9.5f);
-        rightLineVercites[1] = new Vector2(Utils.getHalfWidth() * 1.0f - 9.5f, (-Utils.getHalfHeight()) - 14.5f);
-        FixtureDef fixtureDef = createFixture(createChainShape(rightLineVercites), 1.0f, 0.5f, 0.0f, false);
+        Vector2[] vertices = new Vector2[2];
+        vertices[0] = new Vector2(Utils.getHalfWidth(), -Utils.getHalfHeight());
+        vertices[1] = new Vector2(Utils.getHalfWidth(), Utils.getHalfHeight());
+        FixtureDef fixtureDef = createFixture(createChainShape(vertices), 1.0f, 0.5f, 0.0f, false);
         fixtureDef.filter.groupIndex = (short) 1;
-        return createBody(world, BodyType.StaticBody, fixtureDef, new Vector2(Utils.getHalfWidth(), Utils.getHalfHeight()));
+        return createBody(world, BodyType.StaticBody, fixtureDef, new Vector2(0.0f, 0.0f));
     }
 
     public static Body createScoreBoardComputer(World world) {

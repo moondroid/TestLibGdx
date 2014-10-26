@@ -8,50 +8,45 @@ import com.badlogic.gdx.Gdx;
 public class Utils {
     private static float halfHeight;
     private static float halfWidth;
+    private static float width;
     private static float height;
-    private float realHeight;
-    private float realWidth;
-    private float virtualHeight;
-    private float virtualWidth;
+    private static float realHeight;
+    private static float realWidth;
+
 
     static {
-        height = 20.0f * (((float) Gdx.graphics.getHeight()) / ((float) Gdx.graphics.getWidth()));
+        width = Constants.WIDTH;
+        height = Constants.WIDTH * (((float) Gdx.graphics.getHeight()) / ((float) Gdx.graphics.getWidth()));
         halfWidth = Constants.WIDTH / 2.0f - Constants.OFFSET;
         halfHeight = height / 2.0f - Constants.OFFSET;
+
+        realWidth = (float) Gdx.graphics.getWidth();
+        realHeight = (float) Gdx.graphics.getHeight();
     }
 
-    public Utils() {
-        this.virtualWidth = 480.0f;
-        this.virtualHeight = 800.0f;
-        this.realWidth = (float) Gdx.graphics.getWidth();
-        this.realHeight = (float) Gdx.graphics.getHeight();
-    }
-
-    public float getHalfHeight() {
+    public static float getHalfHeight() {
         return halfHeight;
     }
 
-    public float getHalfWidth() {
+    public static float getHalfWidth() {
         return halfWidth;
     }
 
-    public float getHeight() {
+    public static float getWidth(){
+        return width;
+    }
+
+    public static float getHeight() {
         return height;
     }
 
-    public float getRealHeight() {
-        return this.realHeight;
+    public static float getRealHeight() {
+        return realHeight;
     }
 
-    public float getRealWidth() {
-        return this.realWidth;
+    public static float getRealWidth() {
+        return realWidth;
     }
 
-    public float getVirtualHeight() {
-        return this.virtualHeight;
-    }
 
-    public float getVirtualWidth() {
-        return this.virtualWidth;
-    }
 }

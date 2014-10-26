@@ -15,7 +15,7 @@ public class AndroidLauncher extends AndroidApplication {
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		//initialize(new MyGdxGame(), config);
         //initialize(new Pong(), config);
-        //initialize(new AirHockey(), config);
-        initialize(new BouncingBallGame(), config);
+        initialize(new AirHockey(), config);
+        //initialize(new BouncingBallGame(), config);
 	}
 }

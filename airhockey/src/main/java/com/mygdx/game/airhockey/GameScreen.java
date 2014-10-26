@@ -8,9 +8,14 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
+import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 
 /**
  * Created by Marco on 29/09/2014.
@@ -49,6 +54,17 @@ public class GameScreen extends InputAdapter implements Screen {
     private Body player;
     private Body computer;
 
+    /* Use a long to store current time and calculate user touches duration */
+    private Long timer;
+    private Vector3 touchPosition = new Vector3();
+
+    /*
+	 * Used to define a mouse joint for a body. This point will track a
+	 * specified world point.
+	 */
+    private MouseJoint mouseJoint;
+    private MouseJointDef mouseJointDef;
+
     public GameScreen(Game game){
         this.game = game;
     }
@@ -80,7 +96,7 @@ public class GameScreen extends InputAdapter implements Screen {
         Gdx.input.setInputProcessor(this);
 
         this.batch = new SpriteBatch();
-        this.world = new World(new Vector2(0.0f, -9.8f), true);
+        this.world = new World(new Vector2(0.0f, 0.0f), true);
         this.camera = new OrthographicCamera(Utils.getWidth(), Utils.getHeight());
 
         this.cornerLineLeftUp = Box2DFactory.createCornerLineLeftUp(this.world);
@@ -106,11 +122,13 @@ public class GameScreen extends InputAdapter implements Screen {
 
 
         this.ball = Box2DFactory.createBall(this.world);
-        ball.setLinearVelocity(new Vector2(0.5f, 0f));
+        ball.setLinearVelocity(new Vector2(0.5f, -1.0f));
 
         this.player = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, -Utils.getHalfHeight()/2.0f));
         this.computer = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, Utils.getHalfHeight()/2.0f));
 
+        /* Define the mouse joint. We use walls as the first body of the joint */
+        createMouseJointDefinition(halfLine);
     }
 
     @Override
@@ -141,16 +159,83 @@ public class GameScreen extends InputAdapter implements Screen {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return false;
+        Gdx.app.debug("BouncingBallScreen", "touchDown");
+
+        // translate the mouse coordinates to world coordinates
+        touchPosition.set(screenX, screenY, 0);
+        camera.unproject(touchPosition);
+
+/*
+		 * Define a new QueryCallback. This callback will be used in
+		 * world.QueryAABB method.
+		 */
+        QueryCallback queryCallback = new QueryCallback() {
+
+            @Override
+            public boolean reportFixture(Fixture fixture) {
+                boolean testResult;
+
+				/*
+				 * If the hit point is inside the fixture of the body, create a
+				 * new MouseJoint.
+				 */
+                if (testResult = fixture.testPoint(touchPosition.x,
+                        touchPosition.y) && (fixture.getBody() == player || fixture.getBody() == computer)) {
+                    mouseJointDef.bodyB = fixture.getBody();
+                    mouseJointDef.target.set(touchPosition.x, touchPosition.y);
+                    mouseJointDef.maxForce = 10000.0f * fixture.getBody().getMass();
+                    mouseJoint = (MouseJoint) world.createJoint(mouseJointDef);
+                }
+
+                return testResult;
+            }
+        };
+
+        world.QueryAABB(queryCallback,
+                touchPosition.x - 0.1f, touchPosition.y - 0.1f, touchPosition.x + 0.1f, touchPosition.y + 0.1f);
+
+
+        return true;
     }
 
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
+        /* Whether the input was processed */
+        boolean processed = false;
+
+		/*
+		 * If a MouseJoint is defined, update its target with current position.
+		 */
+        if (mouseJoint != null) {
+
+			/* Translate camera point to world point */
+            camera.unproject(touchPosition.set(screenX, screenY, 0));
+            mouseJoint.setTarget(new Vector2(touchPosition.x, touchPosition.y));
+        }
+
+        return processed;
     }
 
 
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
+        /* Whether the input was processed */
+        boolean processed = false;
+
+        /* If a MouseJoint is defined, destroy it */
+        if (mouseJoint != null) {
+            world.destroyJoint(mouseJoint);
+            mouseJoint = null;
+
+            processed = true;
+        }
+
+        return processed;
     }
 
+    private void createMouseJointDefinition(Body body) {
+        mouseJointDef = new MouseJointDef();
+        mouseJointDef.bodyA = body;
+        mouseJointDef.collideConnected = true;
+        mouseJointDef.frequencyHz = 100;
+        mouseJointDef.dampingRatio = 0.0f;
+    }
 }

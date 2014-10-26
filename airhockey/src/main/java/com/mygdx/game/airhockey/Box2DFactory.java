@@ -47,10 +47,12 @@ public class Box2DFactory {
 
     public static Body createPaddle(World world, Vector2 position){
         Shape entityShape = Box2DFactory.createCircleShape(1.5f);
-        float restitution = 1.4f;
+        float restitution = 0.1f;
         FixtureDef entityFixture = Box2DFactory.createFixture(entityShape, 1.0f, FRICTION_PADDLES, restitution, false);
         entityFixture.filter.groupIndex = GROUP_PADDLE;
-        return Box2DFactory.createBody(world, BodyType.StaticBody, entityFixture, position);
+        Body body = Box2DFactory.createBody(world, BodyType.DynamicBody, entityFixture, position);
+        body.setFixedRotation(true);
+        return body;
     }
 
     public static Shape createBoxShape(Vector2 center, float angle) {

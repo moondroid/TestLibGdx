@@ -46,6 +46,8 @@ public class GameScreen extends InputAdapter implements Screen {
 
 
     private Body ball;
+    private Body player;
+    private Body computer;
 
     public GameScreen(Game game){
         this.game = game;
@@ -105,6 +107,10 @@ public class GameScreen extends InputAdapter implements Screen {
 
         this.ball = Box2DFactory.createBall(this.world);
         ball.setLinearVelocity(new Vector2(0.5f, 0f));
+
+        this.player = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, -Utils.getHalfHeight()/2.0f));
+        this.computer = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, Utils.getHalfHeight()/2.0f));
+
     }
 
     @Override

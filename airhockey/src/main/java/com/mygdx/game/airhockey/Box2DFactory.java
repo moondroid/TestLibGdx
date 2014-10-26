@@ -17,13 +17,13 @@ import com.badlogic.gdx.physics.box2d.World;
 
 public class Box2DFactory {
 
-    final static short GROUP_PLAYER = 1;//positive = always collide between each other
+    final static short GROUP_PADDLE = 1;//positive = always collide between each other
     final static short GROUP_BALL = -2;//negative = never collide between each other
     final static short GROUP_GOALS = -3;
     final static short GROUP_SCENERY = -4;
 
     final static float FRICTION_BALL = 0.2f;
-    final static float FRICTION_SCENERY = 0.0f;
+    final static float FRICTION_SCENERY = 0.1f;
     final static float FRICTION_PADDLES = 0.3f;
 
 
@@ -39,10 +39,18 @@ public class Box2DFactory {
 
     public static Body createBall(World world){
         Shape entityShape = Box2DFactory.createCircleShape(1.0f);
-        float restitutionBALL = 1.0f;
+        float restitutionBALL = 0.9f;
         FixtureDef entityFixture = Box2DFactory.createFixture(entityShape, 0.1f, FRICTION_BALL, restitutionBALL, false);
         entityFixture.filter.groupIndex = GROUP_BALL;
         return Box2DFactory.createBody(world, BodyType.DynamicBody, entityFixture, new Vector2(0, 0));
+    }
+
+    public static Body createPaddle(World world, Vector2 position){
+        Shape entityShape = Box2DFactory.createCircleShape(1.5f);
+        float restitution = 1.4f;
+        FixtureDef entityFixture = Box2DFactory.createFixture(entityShape, 1.0f, FRICTION_PADDLES, restitution, false);
+        entityFixture.filter.groupIndex = GROUP_PADDLE;
+        return Box2DFactory.createBody(world, BodyType.StaticBody, entityFixture, position);
     }
 
     public static Shape createBoxShape(Vector2 center, float angle) {

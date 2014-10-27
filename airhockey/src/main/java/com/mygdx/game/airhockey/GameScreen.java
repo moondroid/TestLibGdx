@@ -20,7 +20,7 @@ import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
-
+import static com.mygdx.game.airhockey.Box2DFactory.*;
 import java.awt.event.ContainerListener;
 
 /**
@@ -71,6 +71,8 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
     private MouseJoint mouseJoint;
     private MouseJointDef mouseJointDef;
 
+    private BallReposition ballRePosition = BallReposition.CENTER;
+
     public GameScreen(Game game){
         this.game = game;
     }
@@ -84,6 +86,19 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
 
 		/* Render all graphics before do physics step */
         debugRenderer.render(world, camera.combined);
+
+        if(ballRePosition!=BallReposition.NONE){
+            world.destroyBody(ball);
+            world.destroyBody(player);
+            world.destroyBody(computer);
+            if(mouseJoint!=null){
+                world.destroyJoint(mouseJoint);
+            }
+            ball = Box2DFactory.createBall(this.world, ballRePosition);
+            player = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, -Utils.getHalfHeight()/2.0f));
+            computer = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, Utils.getHalfHeight()/2.0f));
+            ballRePosition = BallReposition.NONE;
+        }
 
 		/* Step the simulation with a fixed time step of 1/60 of a second */
         world.step(1 / 60f, 6, 2);
@@ -129,8 +144,7 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
         this.invisibleWalls = Box2DFactory.createInvisibleWalls(this.world);
 
 
-        this.ball = Box2DFactory.createBall(this.world);
-        //ball.setLinearVelocity(new Vector2(0.5f, -1.0f));
+        this.ball = Box2DFactory.createBall(this.world, ballRePosition);
 
         this.player = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, -Utils.getHalfHeight()/2.0f));
         this.computer = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, Utils.getHalfHeight()/2.0f));
@@ -250,6 +264,7 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
         mouseJointDef.dampingRatio = 0.0f;
     }
 
+
     /*
     * CONTACTLISTENER INTERFACE
     */
@@ -262,17 +277,13 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
         if (a == goalLineUp || b==goalLineUp){
             //TODO
             Gdx.app.debug("GameScreen.beginContact", "goalLineUp");
-            ball.setTransform(0, 0, 0);
-            ball.setLinearVelocity(new Vector2(0, 0));
-            ball.setAngularVelocity(0);
+            ballRePosition = BallReposition.COMPUTER;
         }
 
         if (a == goalLineDown || b==goalLineDown){
             //TODO
             Gdx.app.debug("GameScreen.beginContact", "goalLineDown");
-            ball.setTransform(0, 0, 0);
-            ball.setLinearVelocity(new Vector2(0, 0));
-            ball.setAngularVelocity(0);
+            ballRePosition = BallReposition.PLAYER;
         }
     }
 

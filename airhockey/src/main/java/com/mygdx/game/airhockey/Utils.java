@@ -17,8 +17,8 @@ public class Utils {
     static {
         width = Constants.WIDTH;
         height = Constants.WIDTH * (((float) Gdx.graphics.getHeight()) / ((float) Gdx.graphics.getWidth()));
-        halfWidth = Constants.WIDTH / 2.0f - Constants.OFFSET;
-        halfHeight = height / 2.0f - Constants.OFFSET;
+        halfWidth = Constants.WIDTH / 2.0f - Constants.SCENERY_OFFSET;
+        halfHeight = height / 2.0f - Constants.SCENERY_OFFSET;
 
         realWidth = (float) Gdx.graphics.getWidth();
         realHeight = (float) Gdx.graphics.getHeight();

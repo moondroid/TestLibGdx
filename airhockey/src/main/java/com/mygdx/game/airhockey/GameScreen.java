@@ -4,8 +4,10 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -73,6 +75,10 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
 
     private BallReposition ballRePosition = BallReposition.CENTER;
 
+    private BitmapFont font;
+    private int computerScore = 0;
+    private int playerScore = 0;
+
     public GameScreen(Game game){
         this.game = game;
     }
@@ -93,12 +99,21 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
             world.destroyBody(computer);
             if(mouseJoint!=null){
                 world.destroyJoint(mouseJoint);
+                mouseJoint = null;
             }
             ball = Box2DFactory.createBall(this.world, ballRePosition);
             player = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, -Utils.getHalfHeight()/2.0f));
             computer = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, Utils.getHalfHeight()/2.0f));
+            createMouseJointDefinition(halfLine);
+
             ballRePosition = BallReposition.NONE;
         }
+
+        batch.begin();
+        font.draw(batch, "fps: " + Gdx.graphics.getFramesPerSecond(), 15f, font.getCapHeight()+20f);
+        font.draw(batch, String.valueOf(computerScore), Utils.getRealWidth()-60f, Utils.getRealHeight()/2.0f+20.0f+font.getCapHeight());
+        font.draw(batch, String.valueOf(playerScore), Utils.getRealWidth()-60f, Utils.getRealHeight()/2.0f-20.0f);
+        batch.end();
 
 		/* Step the simulation with a fixed time step of 1/60 of a second */
         world.step(1 / 60f, 6, 2);
@@ -151,6 +166,11 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
 
         /* Define the mouse joint. We use walls as the first body of the joint */
         createMouseJointDefinition(halfLine);
+
+        //font = new BitmapFont(Gdx.files.internal("data/font.fnt"), false);
+        font = new BitmapFont();
+        font.setScale(2.0f);
+        font.setColor(Color.WHITE);
     }
 
     @Override
@@ -171,6 +191,7 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
     @Override
     public void dispose() {
         debugRenderer.dispose();
+        font.dispose();
         world.dispose();
     }
 
@@ -228,7 +249,7 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
 		/*
 		 * If a MouseJoint is defined, update its target with current position.
 		 */
-        if (mouseJoint != null) {
+        if (mouseJoint != null && ballRePosition==BallReposition.NONE) {
 
 			/* Translate camera point to world point */
             camera.unproject(touchPosition.set(screenX, screenY, 0));
@@ -278,12 +299,14 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
             //TODO
             Gdx.app.debug("GameScreen.beginContact", "goalLineUp");
             ballRePosition = BallReposition.COMPUTER;
+            playerScore++;
         }
 
         if (a == goalLineDown || b==goalLineDown){
             //TODO
             Gdx.app.debug("GameScreen.beginContact", "goalLineDown");
             ballRePosition = BallReposition.PLAYER;
+            computerScore++;
         }
     }
 

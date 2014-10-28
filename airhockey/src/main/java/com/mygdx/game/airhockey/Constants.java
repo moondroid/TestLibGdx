@@ -6,14 +6,18 @@ package com.mygdx.game.airhockey;
 public class Constants {
     public static float SCENERY_OFFSET;
     public static float BALL_RADIUS;
-    public static float BALL_OFFSET;
+    public static float BALL_OFFSET; //ball offset position from center when scoring
+    public static float PADDLE_RADIUS;
+    public static float GOAL_WIDTH;
     public static float WIDTH;
     private float ballRadius;
     private float computerBallRadius;
 
     static {
-        BALL_RADIUS = 1.5f;
+        BALL_RADIUS = 1.0f;
         BALL_OFFSET = 3.0f;
+        PADDLE_RADIUS = 1.5f;
+        GOAL_WIDTH = BALL_RADIUS * 2.0f;
         SCENERY_OFFSET = 0.5f;
         WIDTH = 20.0f;
     }

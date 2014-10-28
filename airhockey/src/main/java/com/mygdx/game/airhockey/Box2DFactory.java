@@ -41,7 +41,7 @@ public class Box2DFactory {
     }
 
     public static Body createBall(World world, BallPosition position){
-        Shape entityShape = Box2DFactory.createCircleShape(1.0f);
+        Shape entityShape = Box2DFactory.createCircleShape(Constants.BALL_RADIUS);
         float restitutionBALL = 0.9f;
         FixtureDef entityFixture = Box2DFactory.createFixture(entityShape, 0.1f, FRICTION_BALL, restitutionBALL, false);
         entityFixture.filter.groupIndex = GROUP_BALL;
@@ -61,7 +61,7 @@ public class Box2DFactory {
     }
 
     public static Body createPaddle(World world, Vector2 position){
-        Shape entityShape = Box2DFactory.createCircleShape(1.5f);
+        Shape entityShape = Box2DFactory.createCircleShape(Constants.PADDLE_RADIUS);
         float restitution = 0.1f;
         FixtureDef entityFixture = Box2DFactory.createFixture(entityShape, 1.0f, FRICTION_PADDLES, restitution, false);
         entityFixture.filter.groupIndex = GROUP_PADDLE;

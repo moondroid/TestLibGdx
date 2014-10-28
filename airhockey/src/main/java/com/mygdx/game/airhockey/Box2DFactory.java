@@ -26,8 +26,8 @@ public class Box2DFactory {
     final static float FRICTION_SCENERY = 0.1f;
     final static float FRICTION_PADDLES = 0.3f;
 
-    public enum BallReposition {
-        NONE, CENTER, PLAYER, COMPUTER
+    public enum BallPosition {
+        CENTER, PLAYER, COMPUTER
     }
 
     public static Body createBody(World world, BodyType bodyType, FixtureDef fixtureDef, Vector2 position) {
@@ -40,7 +40,7 @@ public class Box2DFactory {
         return body;
     }
 
-    public static Body createBall(World world, BallReposition position){
+    public static Body createBall(World world, BallPosition position){
         Shape entityShape = Box2DFactory.createCircleShape(1.0f);
         float restitutionBALL = 0.9f;
         FixtureDef entityFixture = Box2DFactory.createFixture(entityShape, 0.1f, FRICTION_BALL, restitutionBALL, false);

@@ -22,8 +22,8 @@ import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
+
 import static com.mygdx.game.airhockey.Box2DFactory.*;
-import java.awt.event.ContainerListener;
 
 /**
  * Created by Marco on 29/09/2014.
@@ -67,19 +67,23 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
     private Vector3 touchPosition = new Vector3();
 
     /*
-	 * Used to define a mouse joint for a body. This point will track a
+     * Used to define a mouse joint for a body. This point will track a
 	 * specified world point.
 	 */
     private MouseJoint mouseJoint;
     private MouseJointDef mouseJointDef;
 
-    private BallReposition ballRePosition = BallReposition.CENTER;
+    private GameState state = GameState.PLAY;
+
+    private enum GameState {
+        PLAY, BALL_REPOSITION_PLAYER, BALL_REPOSITION_COMPUTER
+    }
 
     private BitmapFont font;
     private int computerScore = 0;
     private int playerScore = 0;
 
-    public GameScreen(Game game){
+    public GameScreen(Game game) {
         this.game = game;
     }
 
@@ -93,26 +97,25 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
 		/* Render all graphics before do physics step */
         debugRenderer.render(world, camera.combined);
 
-        if(ballRePosition!=BallReposition.NONE){
+        if (state == GameState.BALL_REPOSITION_PLAYER || state == GameState.BALL_REPOSITION_COMPUTER) {
+
+            destroyJoint();
             world.destroyBody(ball);
             world.destroyBody(player);
             world.destroyBody(computer);
-            if(mouseJoint!=null){
-                world.destroyJoint(mouseJoint);
-                mouseJoint = null;
-            }
-            ball = Box2DFactory.createBall(this.world, ballRePosition);
-            player = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, -Utils.getHalfHeight()/2.0f));
-            computer = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, Utils.getHalfHeight()/2.0f));
-            createMouseJointDefinition(halfLine);
 
-            ballRePosition = BallReposition.NONE;
+            BallPosition position = state == GameState.BALL_REPOSITION_PLAYER ? BallPosition.PLAYER : BallPosition.COMPUTER;
+            ball = Box2DFactory.createBall(this.world, position);
+            player = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, -Utils.getHalfHeight() / 2.0f));
+            computer = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, Utils.getHalfHeight() / 2.0f));
+
+            state = GameState.PLAY;
         }
 
         batch.begin();
-        font.draw(batch, "fps: " + Gdx.graphics.getFramesPerSecond(), 15f, font.getCapHeight()+20f);
-        font.draw(batch, String.valueOf(computerScore), Utils.getRealWidth()-60f, Utils.getRealHeight()/2.0f+20.0f+font.getCapHeight());
-        font.draw(batch, String.valueOf(playerScore), Utils.getRealWidth()-60f, Utils.getRealHeight()/2.0f-20.0f);
+        font.draw(batch, "fps: " + Gdx.graphics.getFramesPerSecond(), 15f, font.getCapHeight() + 20f);
+        font.draw(batch, String.valueOf(computerScore), Utils.getRealWidth() - 60f, Utils.getRealHeight() / 2.0f + 20.0f + font.getCapHeight());
+        font.draw(batch, String.valueOf(playerScore), Utils.getRealWidth() - 60f, Utils.getRealHeight() / 2.0f - 20.0f);
         batch.end();
 
 		/* Step the simulation with a fixed time step of 1/60 of a second */
@@ -159,10 +162,10 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
         this.invisibleWalls = Box2DFactory.createInvisibleWalls(this.world);
 
 
-        this.ball = Box2DFactory.createBall(this.world, ballRePosition);
+        this.ball = Box2DFactory.createBall(this.world, BallPosition.CENTER);
 
-        this.player = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, -Utils.getHalfHeight()/2.0f));
-        this.computer = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, Utils.getHalfHeight()/2.0f));
+        this.player = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, -Utils.getHalfHeight() / 2.0f));
+        this.computer = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, Utils.getHalfHeight() / 2.0f));
 
         /* Define the mouse joint. We use walls as the first body of the joint */
         createMouseJointDefinition(halfLine);
@@ -202,40 +205,42 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        Gdx.app.debug("BouncingBallScreen", "touchDown");
+        Gdx.app.debug("GameScreen", "touchDown " + state.name());
 
-        // translate the mouse coordinates to world coordinates
-        touchPosition.set(screenX, screenY, 0);
-        camera.unproject(touchPosition);
+        if (state == GameState.PLAY) {
 
-/*
-		 * Define a new QueryCallback. This callback will be used in
+            // translate the mouse coordinates to world coordinates
+            touchPosition.set(screenX, screenY, 0);
+            camera.unproject(touchPosition);
+        /*
+         * Define a new QueryCallback. This callback will be used in
 		 * world.QueryAABB method.
 		 */
-        QueryCallback queryCallback = new QueryCallback() {
+            QueryCallback queryCallback = new QueryCallback() {
 
-            @Override
-            public boolean reportFixture(Fixture fixture) {
-                boolean testResult;
+                @Override
+                public boolean reportFixture(Fixture fixture) {
+                    boolean testResult;
 
 				/*
 				 * If the hit point is inside the fixture of the body, create a
 				 * new MouseJoint.
 				 */
-                if (testResult = fixture.testPoint(touchPosition.x,
-                        touchPosition.y) && (fixture.getBody() == player || fixture.getBody() == computer)) {
-                    mouseJointDef.bodyB = fixture.getBody();
-                    mouseJointDef.target.set(touchPosition.x, touchPosition.y);
-                    mouseJointDef.maxForce = 10000.0f * fixture.getBody().getMass();
-                    mouseJoint = (MouseJoint) world.createJoint(mouseJointDef);
+                    if (testResult = fixture.testPoint(touchPosition.x,
+                            touchPosition.y) && (fixture.getBody() == player || fixture.getBody() == computer)) {
+                        mouseJointDef.bodyB = fixture.getBody();
+                        mouseJointDef.target.set(touchPosition.x, touchPosition.y);
+                        mouseJointDef.maxForce = 10000.0f * fixture.getBody().getMass();
+                        mouseJoint = (MouseJoint) world.createJoint(mouseJointDef);
+                    }
+
+                    return testResult;
                 }
+            };
 
-                return testResult;
-            }
-        };
-
-        world.QueryAABB(queryCallback,
-                touchPosition.x - 0.1f, touchPosition.y - 0.1f, touchPosition.x + 0.1f, touchPosition.y + 0.1f);
+            world.QueryAABB(queryCallback,
+                    touchPosition.x - 0.1f, touchPosition.y - 0.1f, touchPosition.x + 0.1f, touchPosition.y + 0.1f);
+        }
 
 
         return true;
@@ -243,17 +248,22 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+
         /* Whether the input was processed */
         boolean processed = false;
 
-		/*
-		 * If a MouseJoint is defined, update its target with current position.
-		 */
-        if (mouseJoint != null && ballRePosition==BallReposition.NONE) {
+        if (state == GameState.PLAY) {
+            /*
+		    * If a MouseJoint is defined, update its target with current position.
+		    */
+            if (mouseJoint != null) {
 
 			/* Translate camera point to world point */
-            camera.unproject(touchPosition.set(screenX, screenY, 0));
-            mouseJoint.setTarget(new Vector2(touchPosition.x, touchPosition.y));
+                camera.unproject(touchPosition.set(screenX, screenY, 0));
+                mouseJoint.setTarget(new Vector2(touchPosition.x, touchPosition.y));
+
+                processed = true;
+            }
         }
 
         return processed;
@@ -261,20 +271,24 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        Gdx.app.debug("GameScreen", "touchUp " + state.name());
+
         /* Whether the input was processed */
         boolean processed = false;
 
-        /* If a MouseJoint is defined, destroy it */
-        if (mouseJoint != null) {
-            world.destroyJoint(mouseJoint);
-            mouseJoint = null;
+        if (state == GameState.PLAY) {
+            /* If a MouseJoint is defined, destroy it */
+            if (mouseJoint != null) {
+                world.destroyJoint(mouseJoint);
+                mouseJoint = null;
 
-            processed = true;
+                processed = true;
+            }
         }
+
 
         return processed;
     }
-
 
 
     private void createMouseJointDefinition(Body body) {
@@ -285,6 +299,13 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
         mouseJointDef.dampingRatio = 0.0f;
     }
 
+    private synchronized void destroyJoint() {
+        if (mouseJoint != null) {
+            world.destroyJoint(mouseJoint);
+            mouseJoint = null;
+        }
+    }
+
 
     /*
     * CONTACTLISTENER INTERFACE
@@ -292,22 +313,24 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
 
     @Override
     public void beginContact(Contact contact) {
-        Body a=contact.getFixtureA().getBody();
-        Body b=contact.getFixtureB().getBody();
+        Body a = contact.getFixtureA().getBody();
+        Body b = contact.getFixtureB().getBody();
 
-        if (a == goalLineUp || b==goalLineUp){
-            //TODO
-            Gdx.app.debug("GameScreen.beginContact", "goalLineUp");
-            ballRePosition = BallReposition.COMPUTER;
-            playerScore++;
+        if(a == ball || b == ball){
+            if (a == goalLineUp || b == goalLineUp) {
+                Gdx.app.debug("GameScreen.beginContact", "goalLineUp");
+                state = GameState.BALL_REPOSITION_COMPUTER;
+                playerScore++;
+            }
+
+            if (a == goalLineDown || b == goalLineDown) {
+                Gdx.app.debug("GameScreen.beginContact", "goalLineDown");
+                state = GameState.BALL_REPOSITION_PLAYER;
+                computerScore++;
+            }
         }
 
-        if (a == goalLineDown || b==goalLineDown){
-            //TODO
-            Gdx.app.debug("GameScreen.beginContact", "goalLineDown");
-            ballRePosition = BallReposition.PLAYER;
-            computerScore++;
-        }
+
     }
 
     @Override

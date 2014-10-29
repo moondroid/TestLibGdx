@@ -148,11 +148,11 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
         this.leftLine = Box2DFactory.createLeftLine(this.world);
         this.rightLine = Box2DFactory.createRightLine(this.world);
 
-        this.rightUpLine = Box2DFactory.createGoalLineRightUp(this.world);
-        this.leftUpLine = Box2DFactory.createGoalLineLeftUp(this.world);
+        this.rightUpLine = Box2DFactory.createLineRightUp(this.world);
+        this.leftUpLine = Box2DFactory.createLineLeftUp(this.world);
 
-        this.rightGoalLine = Box2DFactory.createGoalLineRight(this.world);
-        this.leftGoalLine = Box2DFactory.createGoalLineLeft(this.world);
+        this.rightGoalLine = Box2DFactory.createLineRightDown(this.world);
+        this.leftGoalLine = Box2DFactory.createLineLeftDown(this.world);
 
         this.halfLine = Box2DFactory.createHalfLine(this.world);
 

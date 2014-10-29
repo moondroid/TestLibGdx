@@ -2,6 +2,7 @@ package com.mygdx.game.airhockey;
 
 import com.badlogic.gdx.Gdx;
 
+
 /**
  * Created by Marco on 30/09/2014.
  */
@@ -48,5 +49,7 @@ public class Utils {
         return realWidth;
     }
 
-
+    public static float getGoalLineHeight(){
+        return getHalfHeight()-Constants.GOAL_OFFSET;
+    }
 }

@@ -12,6 +12,7 @@ public class Constants {
     public static float GOAL_WIDTH;
     public static float GOAL_OFFSET;
     public static float WIDTH;
+    public static float HEIGHT;
     private float ballRadius;
     private float computerBallRadius;
 
@@ -23,7 +24,8 @@ public class Constants {
         SCENERY_OFFSET = 0.5f;
         SCENERY_CORNER_RADIUS = 2.0f;
         GOAL_OFFSET = 2.5f;
-        WIDTH = 20.0f;
+        WIDTH = 480.0f;
+        HEIGHT = 800.0f;
     }
 
     public Constants() {

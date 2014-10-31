@@ -85,6 +85,9 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
 
     public GameScreen(Game game) {
         this.game = game;
+
+        Assets.manager.clear();
+        Assets.loadPictures();
     }
 
     @Override
@@ -94,8 +97,6 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		/* Render all graphics before do physics step */
-        debugRenderer.render(world, camera.combined);
 
         if (state == GameState.BALL_REPOSITION_PLAYER || state == GameState.BALL_REPOSITION_COMPUTER) {
 
@@ -112,6 +113,19 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
             state = GameState.PLAY;
         }
 
+        if (Assets.playfields[0]!=null){
+            batch.disableBlending();
+            batch.begin();
+            batch.setProjectionMatrix(camera.combined);
+            batch.draw(Assets.playfields[0], -Utils.getHalfWidth(), -Utils.getHalfHeight(), Utils.getWidth(), Utils.getHeight());
+            batch.end();
+        }
+
+        /* Render all graphics before do physics step */
+        debugRenderer.render(world, camera.combined);
+
+        //draw fps and scores
+        batch.enableBlending();
         batch.begin();
         font.draw(batch, "fps: " + Gdx.graphics.getFramesPerSecond(), 15f, font.getCapHeight() + 20f);
         font.draw(batch, String.valueOf(computerScore), Utils.getRealWidth() - 60f, Utils.getRealHeight() / 2.0f + 20.0f + font.getCapHeight());
@@ -139,6 +153,8 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
         world.setContactListener(this);
 
         this.camera = new OrthographicCamera(Utils.getWidth(), Utils.getHeight());
+//        camera.position.x = Utils.getHalfWidth();
+//        camera.position.y = Utils.getHalfHeight();
 
         this.cornerLineLeftUp = Box2DFactory.createCornerLineLeftUp(this.world);
         this.cornerLineLeftDown = Box2DFactory.createCornerLineLeftDown(this.world);

@@ -107,17 +107,19 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
 
             BallPosition position = state == GameState.BALL_REPOSITION_PLAYER ? BallPosition.PLAYER : BallPosition.COMPUTER;
             ball = Box2DFactory.createBall(this.world, position);
-            player = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, -Utils.getHalfHeight() / 2.0f));
-            computer = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, Utils.getHalfHeight() / 2.0f));
+            player = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, -Constants.PLAYER_REPOSITION_OFFSET));
+            computer = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, Constants.PLAYER_REPOSITION_OFFSET));
 
             state = GameState.PLAY;
         }
 
         if (Assets.playfields[0]!=null){
-            batch.disableBlending();
+            batch.enableBlending();
             batch.begin();
-            batch.setProjectionMatrix(camera.combined);
+            Color c = batch.getColor();
+            batch.setColor(c.r, c.g, c.b, .3f);//set alpha to 0.3
             batch.draw(Assets.playfields[0], -Utils.getHalfWidth(), -Utils.getHalfHeight(), Utils.getWidth(), Utils.getHeight());
+            batch.setColor(c.r, c.g, c.b, 1f); //set alpha to 1
             batch.end();
         }
 
@@ -127,9 +129,11 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
         //draw fps and scores
         batch.enableBlending();
         batch.begin();
-        font.draw(batch, "fps: " + Gdx.graphics.getFramesPerSecond(), 15f, font.getCapHeight() + 20f);
-        font.draw(batch, String.valueOf(computerScore), Utils.getRealWidth() - 60f, Utils.getRealHeight() / 2.0f + 20.0f + font.getCapHeight());
-        font.draw(batch, String.valueOf(playerScore), Utils.getRealWidth() - 60f, Utils.getRealHeight() / 2.0f - 20.0f);
+        font.setScale(1.0f);
+        font.draw(batch, "fps: " + Gdx.graphics.getFramesPerSecond(), -Utils.getHalfPlayfieldWidth() +15f, -Utils.getHalfPlayfieldHeight() + font.getCapHeight());
+        font.setScale(2.0f);
+        font.draw(batch, String.valueOf(computerScore), Utils.getHalfPlayfieldWidth() - 60f, font.getCapHeight() + 20f);
+        font.draw(batch, String.valueOf(playerScore), Utils.getHalfPlayfieldWidth() - 60f, - 20.0f);
         batch.end();
 
 		/* Step the simulation with a fixed time step of 1/60 of a second */
@@ -153,8 +157,7 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
         world.setContactListener(this);
 
         this.camera = new OrthographicCamera(Utils.getWidth(), Utils.getHeight());
-//        camera.position.x = Utils.getHalfWidth();
-//        camera.position.y = Utils.getHalfHeight();
+        batch.setProjectionMatrix(camera.combined);
 
         this.cornerLineLeftUp = Box2DFactory.createCornerLineLeftUp(this.world);
         this.cornerLineLeftDown = Box2DFactory.createCornerLineLeftDown(this.world);
@@ -180,15 +183,14 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
 
         this.ball = Box2DFactory.createBall(this.world, BallPosition.CENTER);
 
-        this.player = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, -Utils.getHalfHeight() / 2.0f));
-        this.computer = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, Utils.getHalfHeight() / 2.0f));
+        this.player = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, -Constants.PLAYER_REPOSITION_OFFSET));
+        this.computer = Box2DFactory.createPaddle(this.world, new Vector2(0.0f, Constants.PLAYER_REPOSITION_OFFSET));
 
         /* Define the mouse joint. We use walls as the first body of the joint */
         createMouseJointDefinition(halfLine);
 
         //font = new BitmapFont(Gdx.files.internal("data/font.fnt"), false);
         font = new BitmapFont();
-        font.setScale(2.0f);
         font.setColor(Color.WHITE);
     }
 

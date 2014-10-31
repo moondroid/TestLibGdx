@@ -8,6 +8,7 @@ public class Constants {
     public static float SCENERY_CORNER_RADIUS;
     public static float BALL_RADIUS;
     public static float BALL_REPOSITION_OFFSET; //ball offset position from center when scoring
+    public static float PLAYER_REPOSITION_OFFSET; //player offset position from center when scoring
     public static float PADDLE_RADIUS;
     public static float GOAL_WIDTH;
     public static float GOAL_OFFSET;
@@ -17,15 +18,19 @@ public class Constants {
     private float computerBallRadius;
 
     static {
-        BALL_RADIUS = 1.0f;
-        BALL_REPOSITION_OFFSET = 3.0f;
-        PADDLE_RADIUS = BALL_RADIUS * 2.0f;
-        GOAL_WIDTH = PADDLE_RADIUS * 4.0f;
-        SCENERY_OFFSET = 0.5f;
-        SCENERY_CORNER_RADIUS = 2.0f;
-        GOAL_OFFSET = 2.5f;
+
         WIDTH = 480.0f;
         HEIGHT = 800.0f;
+
+        GOAL_WIDTH = 180.0f;
+        SCENERY_OFFSET = 27.0f;
+        SCENERY_CORNER_RADIUS = 20.0f;
+        GOAL_OFFSET = 57.0f;
+
+        PADDLE_RADIUS = GOAL_WIDTH * 0.25f;
+        BALL_RADIUS = PADDLE_RADIUS * 0.5f;
+        BALL_REPOSITION_OFFSET = 135.0f;
+        PLAYER_REPOSITION_OFFSET = 260.0f;
     }
 
     public Constants() {

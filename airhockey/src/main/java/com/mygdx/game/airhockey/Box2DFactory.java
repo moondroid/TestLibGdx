@@ -72,7 +72,7 @@ public class Box2DFactory {
 
     public static Shape createBoxShape(Vector2 center, float angle) {
         PolygonShape boxShape = new PolygonShape();
-        boxShape.setAsBox(Utils.getHalfWidth(), Utils.getHalfHeight(), center, angle);
+        boxShape.setAsBox(Utils.getHalfPlayfieldWidth(), Utils.getHalfPlayfieldHeight(), center, angle);
         return boxShape;
     }
 
@@ -90,8 +90,8 @@ public class Box2DFactory {
 
     public static Body createCornerLineLeftDown(World world) {
         Vector2[] cornerLineLeftDown = new Vector2[2];
-        cornerLineLeftDown[0] = new Vector2(-Utils.getHalfWidth()+Constants.SCENERY_CORNER_RADIUS, - Utils.getGoalLineHeight());
-        cornerLineLeftDown[1] = new Vector2(- Utils.getHalfWidth(), - Utils.getGoalLineHeight() + Constants.SCENERY_CORNER_RADIUS);
+        cornerLineLeftDown[0] = new Vector2(-Utils.getHalfPlayfieldWidth()+Constants.SCENERY_CORNER_RADIUS, - Utils.getGoalLineHeight());
+        cornerLineLeftDown[1] = new Vector2(- Utils.getHalfPlayfieldWidth(), - Utils.getGoalLineHeight() + Constants.SCENERY_CORNER_RADIUS);
         FixtureDef fixtureDef = createFixture(createChainShape(cornerLineLeftDown), 1.0f, FRICTION_SCENERY, 0.0f, false);
         fixtureDef.filter.groupIndex = GROUP_SCENERY;
         return createBody(world, BodyType.StaticBody, fixtureDef, new Vector2(0, 0));
@@ -99,8 +99,8 @@ public class Box2DFactory {
 
     public static Body createCornerLineLeftUp(World world) {
         Vector2[] cornerLineLeftUp = new Vector2[2];
-        cornerLineLeftUp[0] = new Vector2(-Utils.getHalfWidth()+Constants.SCENERY_CORNER_RADIUS, Utils.getGoalLineHeight());
-        cornerLineLeftUp[1] = new Vector2(-Utils.getHalfWidth(), Utils.getGoalLineHeight() - Constants.SCENERY_CORNER_RADIUS);
+        cornerLineLeftUp[0] = new Vector2(-Utils.getHalfPlayfieldWidth()+Constants.SCENERY_CORNER_RADIUS, Utils.getGoalLineHeight());
+        cornerLineLeftUp[1] = new Vector2(-Utils.getHalfPlayfieldWidth(), Utils.getGoalLineHeight() - Constants.SCENERY_CORNER_RADIUS);
         FixtureDef fixtureDef = createFixture(createChainShape(cornerLineLeftUp), 1.0f, FRICTION_SCENERY, 0.0f, false);
         fixtureDef.filter.groupIndex = GROUP_SCENERY;
         return createBody(world, BodyType.StaticBody, fixtureDef, new Vector2(0, 0));
@@ -108,8 +108,8 @@ public class Box2DFactory {
 
     public static Body createCornerLineRightDown(World world) {
         Vector2[] cornerLineRightDown = new Vector2[2];
-        cornerLineRightDown[0] = new Vector2(Utils.getHalfWidth(), -Utils.getGoalLineHeight()+Constants.SCENERY_CORNER_RADIUS);
-        cornerLineRightDown[1] = new Vector2(Utils.getHalfWidth() -Constants.SCENERY_CORNER_RADIUS, - Utils.getGoalLineHeight());
+        cornerLineRightDown[0] = new Vector2(Utils.getHalfPlayfieldWidth(), -Utils.getGoalLineHeight()+Constants.SCENERY_CORNER_RADIUS);
+        cornerLineRightDown[1] = new Vector2(Utils.getHalfPlayfieldWidth() -Constants.SCENERY_CORNER_RADIUS, - Utils.getGoalLineHeight());
         FixtureDef fixtureDef = createFixture(createChainShape(cornerLineRightDown), 1.0f, FRICTION_SCENERY, 0.0f, false);
         fixtureDef.filter.groupIndex = GROUP_SCENERY;
         return createBody(world, BodyType.StaticBody, fixtureDef, new Vector2(0, 0));
@@ -117,8 +117,8 @@ public class Box2DFactory {
 
     public static Body createCornerLineRightUp(World world) {
         Vector2[] cornerLineRightUp = new Vector2[2];
-        cornerLineRightUp[0] = new Vector2(Utils.getHalfWidth()-Constants.SCENERY_CORNER_RADIUS, Utils.getGoalLineHeight());
-        cornerLineRightUp[1] = new Vector2(Utils.getHalfWidth(), Utils.getGoalLineHeight() - Constants.SCENERY_CORNER_RADIUS);
+        cornerLineRightUp[0] = new Vector2(Utils.getHalfPlayfieldWidth()-Constants.SCENERY_CORNER_RADIUS, Utils.getGoalLineHeight());
+        cornerLineRightUp[1] = new Vector2(Utils.getHalfPlayfieldWidth(), Utils.getGoalLineHeight() - Constants.SCENERY_CORNER_RADIUS);
         FixtureDef fixtureDef = createFixture(createChainShape(cornerLineRightUp), 1.0f, FRICTION_SCENERY, 0.0f, false);
         fixtureDef.filter.groupIndex = GROUP_SCENERY;
         return createBody(world, BodyType.StaticBody, fixtureDef, new Vector2(0, 0));
@@ -137,8 +137,8 @@ public class Box2DFactory {
     public static Body createGoalLineUp(World world) {
         Vector2[] goalLineUpVertices = new Vector2[2];
 
-        goalLineUpVertices[0] = new Vector2(-Constants.GOAL_WIDTH/2.0f, Utils.getGoalLineHeight()+1.0f);
-        goalLineUpVertices[1] = new Vector2(Constants.GOAL_WIDTH/2.0f, Utils.getGoalLineHeight()+1.0f);
+        goalLineUpVertices[0] = new Vector2(-Constants.GOAL_WIDTH/2.0f, Utils.getGoalLineHeight()+Constants.GOAL_OFFSET/2.0f);
+        goalLineUpVertices[1] = new Vector2(Constants.GOAL_WIDTH/2.0f, Utils.getGoalLineHeight()+Constants.GOAL_OFFSET/2.0f);
 
         FixtureDef fixtureDef = createFixture(createChainShape(goalLineUpVertices), 1.0f, 0.5f, 1.1f, false);
         fixtureDef.filter.groupIndex = GROUP_GOALS;
@@ -148,8 +148,8 @@ public class Box2DFactory {
     public static Body createGoalLineDown(World world) {
         Vector2[] goalLineDownVertices = new Vector2[2];
 
-        goalLineDownVertices[0] = new Vector2(-Constants.GOAL_WIDTH/2.0f, -Utils.getGoalLineHeight()-1.0f);
-        goalLineDownVertices[1] = new Vector2(Constants.GOAL_WIDTH/2.0f, -Utils.getGoalLineHeight()-1.0f);
+        goalLineDownVertices[0] = new Vector2(-Constants.GOAL_WIDTH/2.0f, -Utils.getGoalLineHeight()-Constants.GOAL_OFFSET/2.0f);
+        goalLineDownVertices[1] = new Vector2(Constants.GOAL_WIDTH/2.0f, -Utils.getGoalLineHeight()-Constants.GOAL_OFFSET/2.0f);
 
         FixtureDef fixtureDef = createFixture(createChainShape(goalLineDownVertices), 1.0f, 0.5f, 1.1f, false);
         fixtureDef.filter.groupIndex = GROUP_GOALS;
@@ -160,7 +160,7 @@ public class Box2DFactory {
     public static Body createLineLeftUp(World world) {
         Vector2[] UpLeftLineVertices = new Vector2[2];
         UpLeftLineVertices[0] = new Vector2(-Constants.GOAL_WIDTH/2.0f, Utils.getGoalLineHeight());
-        UpLeftLineVertices[1] = new Vector2(-Utils.getHalfWidth(), Utils.getHalfHeight()-Constants.GOAL_OFFSET);
+        UpLeftLineVertices[1] = new Vector2(-Utils.getHalfPlayfieldWidth(), Utils.getHalfHeight()-Constants.GOAL_OFFSET);
         FixtureDef fixtureDef = createFixture(createChainShape(UpLeftLineVertices), 1.0f, FRICTION_SCENERY, 0.0f, false);
         fixtureDef.filter.groupIndex = GROUP_SCENERY;
         return createBody(world, BodyType.StaticBody, fixtureDef, new Vector2(0, 0));
@@ -168,7 +168,7 @@ public class Box2DFactory {
 
     public static Body createLineRightUp(World world) {
         Vector2[] upRightLineVertices = new Vector2[2];
-        upRightLineVertices[0] = new Vector2(Utils.getHalfWidth(), Utils.getGoalLineHeight());
+        upRightLineVertices[0] = new Vector2(Utils.getHalfPlayfieldWidth(), Utils.getGoalLineHeight());
         upRightLineVertices[1] = new Vector2(Constants.GOAL_WIDTH/2.0f, Utils.getHalfHeight()-Constants.GOAL_OFFSET);
         FixtureDef fixtureDef = createFixture(createChainShape(upRightLineVertices), 1.0f, FRICTION_SCENERY, 0.0f, false);
         fixtureDef.filter.groupIndex = GROUP_SCENERY;
@@ -178,7 +178,7 @@ public class Box2DFactory {
     public static Body createLineLeftDown(World world) {
         Vector2[] LeftLineVertices = new Vector2[2];
         LeftLineVertices[0] = new Vector2(-Constants.GOAL_WIDTH/2.0f, - Utils.getGoalLineHeight());
-        LeftLineVertices[1] = new Vector2(- Utils.getHalfWidth(), - (Utils.getHalfHeight()-Constants.GOAL_OFFSET));
+        LeftLineVertices[1] = new Vector2(- Utils.getHalfPlayfieldWidth(), - (Utils.getHalfHeight()-Constants.GOAL_OFFSET));
         FixtureDef fixtureDef = createFixture(createChainShape(LeftLineVertices), 1.0f, FRICTION_SCENERY, 0.0f, false);
         fixtureDef.filter.groupIndex = GROUP_SCENERY;
         return createBody(world, BodyType.StaticBody, fixtureDef, new Vector2(0, 0));
@@ -186,7 +186,7 @@ public class Box2DFactory {
 
     public static Body createLineRightDown(World world) {
         Vector2[] rightLineVertices = new Vector2[2];
-        rightLineVertices[0] = new Vector2(Utils.getHalfWidth(), - Utils.getGoalLineHeight());
+        rightLineVertices[0] = new Vector2(Utils.getHalfPlayfieldWidth(), - Utils.getGoalLineHeight());
         rightLineVertices[1] = new Vector2(Constants.GOAL_WIDTH/2.0f, - (Utils.getHalfHeight()-Constants.GOAL_OFFSET));
         FixtureDef fixtureDef = createFixture(createChainShape(rightLineVertices), 1.0f, FRICTION_SCENERY, 0.0f, false);
         fixtureDef.filter.groupIndex = GROUP_SCENERY;
@@ -195,11 +195,11 @@ public class Box2DFactory {
 
     public static Body createInvisibleWalls(World world) {
         Vector2[] vertices = new Vector2[5];
-        vertices[0] = new Vector2(-Utils.getHalfWidth(), -Utils.getHalfHeight());
-        vertices[1] = new Vector2(Utils.getHalfWidth(), -Utils.getHalfHeight());
-        vertices[2] = new Vector2(Utils.getHalfWidth(), Utils.getHalfHeight());
-        vertices[3] = new Vector2(-Utils.getHalfWidth(), Utils.getHalfHeight());
-        vertices[4] = new Vector2(-Utils.getHalfWidth(), -Utils.getHalfHeight());
+        vertices[0] = new Vector2(-Utils.getHalfPlayfieldWidth(), -Utils.getHalfHeight());
+        vertices[1] = new Vector2(Utils.getHalfPlayfieldWidth(), -Utils.getHalfHeight());
+        vertices[2] = new Vector2(Utils.getHalfPlayfieldWidth(), Utils.getHalfHeight());
+        vertices[3] = new Vector2(-Utils.getHalfPlayfieldWidth(), Utils.getHalfHeight());
+        vertices[4] = new Vector2(-Utils.getHalfPlayfieldWidth(), -Utils.getHalfHeight());
         FixtureDef fixtureDef = createFixture(createChainShape(vertices), 1.0f, FRICTION_SCENERY, 0.0f, false);
         fixtureDef.filter.groupIndex = GROUP_SCENERY;
         return createBody(world, BodyType.StaticBody, fixtureDef, new Vector2(0.0f, 0.0f));
@@ -207,8 +207,8 @@ public class Box2DFactory {
 
     public static Body createLeftLine(World world) {
         Vector2[] vertices = new Vector2[2];
-        vertices[0] = new Vector2(-Utils.getHalfWidth(), -Utils.getHalfHeight());
-        vertices[1] = new Vector2(-Utils.getHalfWidth(), Utils.getHalfHeight());
+        vertices[0] = new Vector2(-Utils.getHalfPlayfieldWidth(), -Utils.getHalfHeight());
+        vertices[1] = new Vector2(-Utils.getHalfPlayfieldWidth(), Utils.getHalfHeight());
         FixtureDef fixtureDef = createFixture(createChainShape(vertices), 1.0f, FRICTION_SCENERY, 0.0f, false);
         fixtureDef.filter.groupIndex = GROUP_SCENERY;
         return createBody(world, BodyType.StaticBody, fixtureDef, new Vector2(0.0f, 0.0f));
@@ -216,8 +216,8 @@ public class Box2DFactory {
 
     public static Body createRightLine(World world) {
         Vector2[] vertices = new Vector2[2];
-        vertices[0] = new Vector2(Utils.getHalfWidth(), -Utils.getHalfHeight());
-        vertices[1] = new Vector2(Utils.getHalfWidth(), Utils.getHalfHeight());
+        vertices[0] = new Vector2(Utils.getHalfPlayfieldWidth(), -Utils.getHalfHeight());
+        vertices[1] = new Vector2(Utils.getHalfPlayfieldWidth(), Utils.getHalfHeight());
         FixtureDef fixtureDef = createFixture(createChainShape(vertices), 1.0f, FRICTION_SCENERY, 0.0f, false);
         fixtureDef.filter.groupIndex = GROUP_SCENERY;
         return createBody(world, BodyType.StaticBody, fixtureDef, new Vector2(0.0f, 0.0f));
@@ -225,11 +225,11 @@ public class Box2DFactory {
 
     public static Body createHalfLine(World world) {
         Vector2[] halfLineVertices = new Vector2[2];
-        halfLineVertices[0] = new Vector2(0.0f, -Utils.getHalfHeight());
-        halfLineVertices[1] = new Vector2(-2.0f * Utils.getHalfWidth(), -Utils.getHalfHeight());
+        halfLineVertices[0] = new Vector2(0.0f, -Utils.getHalfPlayfieldHeight());
+        halfLineVertices[1] = new Vector2(-2.0f * Utils.getHalfPlayfieldWidth(), -Utils.getHalfPlayfieldHeight());
         FixtureDef fixtureDef = createFixture(createChainShape(halfLineVertices), 1.0f, 0.0f, 0.0f, false);
         fixtureDef.filter.groupIndex = GROUP_BALL;
-        return createBody(world, BodyType.StaticBody, fixtureDef, new Vector2(Utils.getHalfWidth(), Utils.getHalfHeight()));
+        return createBody(world, BodyType.StaticBody, fixtureDef, new Vector2(Utils.getHalfPlayfieldWidth(), Utils.getHalfPlayfieldHeight()));
     }
 
     public static Shape createPolygonShape(Vector2[] vertices) {
@@ -259,9 +259,9 @@ public class Box2DFactory {
     public static Shape createTriangleShape() {
         PolygonShape triangleShape = new PolygonShape();
         Vector2[] vector2Arr = new Vector2[3];
-        vector2Arr[0] = new Vector2(-Utils.getHalfWidth(), -Utils.getHalfHeight());
-        vector2Arr[1] = new Vector2(0.0f, Utils.getHalfHeight());
-        vector2Arr[2] = new Vector2(Utils.getHalfWidth(), -Utils.getHalfHeight());
+        vector2Arr[0] = new Vector2(-Utils.getHalfPlayfieldWidth(), -Utils.getHalfPlayfieldHeight());
+        vector2Arr[1] = new Vector2(0.0f, Utils.getHalfPlayfieldHeight());
+        vector2Arr[2] = new Vector2(Utils.getHalfPlayfieldWidth(), -Utils.getHalfPlayfieldHeight());
         triangleShape.set(vector2Arr);
         return triangleShape;
     }

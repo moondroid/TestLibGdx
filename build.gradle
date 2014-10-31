@@ -35,6 +35,7 @@ project(":android") {
         compile project(":pong")
         compile project(":airhockey")
         compile project(":bouncingball")
+        compile project(":images")
         compile "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
@@ -76,6 +77,15 @@ project(":airhockey") {
 }
 
 project(":bouncingball") {
+    apply plugin: "java"
+
+    dependencies {
+        compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+    }
+}
+
+project(":images") {
     apply plugin: "java"
 
     dependencies {

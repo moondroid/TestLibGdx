@@ -90,6 +90,12 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
 
         Assets.manager.clear();
         Assets.loadPictures();
+        Assets.loadTextureAtlas();
+
+        while (!Assets.manager.update()){
+            //wait
+        }
+        Assets.post_load();
     }
 
     @Override
@@ -115,15 +121,33 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
             state = GameState.PLAY;
         }
 
-        if (Assets.playfields[0]!=null){
+        /* Render background */
+        if (Assets.playfields[Assets.playfieldRegion] != null){
             batch.enableBlending();
             batch.begin();
             Color c = batch.getColor();
             batch.setColor(c.r, c.g, c.b, 0.4f);//set alpha to 0.4
-            batch.draw(Assets.playfields[0], -Utils.getHalfWidth(), -Utils.getHalfHeight(), Utils.getWidth(), Utils.getHeight());
+            batch.draw(Assets.playfields[Assets.playfieldRegion], -Utils.getHalfWidth(), -Utils.getHalfHeight(), Utils.getWidth(), Utils.getHeight());
             batch.setColor(c.r, c.g, c.b, 1f); //set alpha to 1
             batch.end();
         }
+
+        /* Render ball and paddles */
+        if (Assets.ballregions[Assets.ballRegion] != null){
+            batch.begin();
+            Vector2 ballPosition = ball.getPosition();
+            Vector2 playerPosition = player.getPosition();
+            Vector2 computerPosition = computer.getPosition();
+            batch.draw(Assets.ballregions[Assets.ballRegion], ballPosition.x - Constants.BALL_RADIUS, ballPosition.y
+                    - Constants.BALL_RADIUS, Constants.BALL_RADIUS * 2.0f, Constants.BALL_RADIUS * 2.0f);
+
+            batch.draw(Assets.paddleRegions[Assets.paddleRegion0], playerPosition.x - Constants.PADDLE_RADIUS, playerPosition.y
+                            - Constants.PADDLE_RADIUS, Constants.PADDLE_RADIUS * 2.0f, Constants.PADDLE_RADIUS * 2.0f);
+            batch.draw(Assets.paddleRegions[Assets.paddleRegion1], computerPosition.x - Constants.PADDLE_RADIUS, computerPosition.y
+                    - Constants.PADDLE_RADIUS, Constants.PADDLE_RADIUS * 2.0f, Constants.PADDLE_RADIUS * 2.0f);
+            batch.end();
+        }
+
 
         /* Render all graphics before do physics step */
         debugRenderer.render(world, camera.combined);

@@ -1,4 +1,4 @@
-package com.mygdx.game.airhockey;
+package com.mygdx.game.airhockey.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -22,6 +22,10 @@ import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
+import com.mygdx.game.airhockey.Assets;
+import com.mygdx.game.airhockey.Box2DFactory;
+import com.mygdx.game.airhockey.Constants;
+import com.mygdx.game.airhockey.Utils;
 
 import static com.mygdx.game.airhockey.Box2DFactory.*;
 
@@ -87,15 +91,6 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
 
     public GameScreen(Game game) {
         this.game = game;
-
-        Assets.manager.clear();
-        Assets.loadPictures();
-        Assets.loadTextureAtlas();
-
-        while (!Assets.manager.update()){
-            //wait
-        }
-        Assets.post_load();
     }
 
     @Override
@@ -122,31 +117,27 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
         }
 
         /* Render background */
-        if (Assets.playfields[Assets.playfieldRegion] != null){
-            batch.enableBlending();
-            batch.begin();
-            Color c = batch.getColor();
-            batch.setColor(c.r, c.g, c.b, 0.4f);//set alpha to 0.4
-            batch.draw(Assets.playfields[Assets.playfieldRegion], -Utils.getHalfWidth(), -Utils.getHalfHeight(), Utils.getWidth(), Utils.getHeight());
-            batch.setColor(c.r, c.g, c.b, 1f); //set alpha to 1
-            batch.end();
-        }
+        batch.enableBlending();
+        batch.begin();
+        Color c = batch.getColor();
+        batch.setColor(c.r, c.g, c.b, 0.4f);//set alpha to 0.4
+        batch.draw(Assets.playfields[Assets.playfieldRegion], -Utils.getHalfWidth(), -Utils.getHalfHeight(), Utils.getWidth(), Utils.getHeight());
+        batch.setColor(c.r, c.g, c.b, 1f); //set alpha to 1
+        batch.end();
 
         /* Render ball and paddles */
-        if (Assets.ballregions[Assets.ballRegion] != null){
-            batch.begin();
-            Vector2 ballPosition = ball.getPosition();
-            Vector2 playerPosition = player.getPosition();
-            Vector2 computerPosition = computer.getPosition();
-            batch.draw(Assets.ballregions[Assets.ballRegion], ballPosition.x - Constants.BALL_RADIUS, ballPosition.y
-                    - Constants.BALL_RADIUS, Constants.BALL_RADIUS * 2.0f, Constants.BALL_RADIUS * 2.0f);
+        batch.begin();
+        Vector2 ballPosition = ball.getPosition();
+        Vector2 playerPosition = player.getPosition();
+        Vector2 computerPosition = computer.getPosition();
+        batch.draw(Assets.ballregions[Assets.ballRegion], ballPosition.x - Constants.BALL_RADIUS, ballPosition.y
+                - Constants.BALL_RADIUS, Constants.BALL_RADIUS * 2.0f, Constants.BALL_RADIUS * 2.0f);
 
-            batch.draw(Assets.paddleRegions[Assets.paddleRegion0], playerPosition.x - Constants.PADDLE_RADIUS, playerPosition.y
-                            - Constants.PADDLE_RADIUS, Constants.PADDLE_RADIUS * 2.0f, Constants.PADDLE_RADIUS * 2.0f);
-            batch.draw(Assets.paddleRegions[Assets.paddleRegion1], computerPosition.x - Constants.PADDLE_RADIUS, computerPosition.y
-                    - Constants.PADDLE_RADIUS, Constants.PADDLE_RADIUS * 2.0f, Constants.PADDLE_RADIUS * 2.0f);
-            batch.end();
-        }
+        batch.draw(Assets.paddleRegions[Assets.paddleRegion0], playerPosition.x - Constants.PADDLE_RADIUS, playerPosition.y
+                - Constants.PADDLE_RADIUS, Constants.PADDLE_RADIUS * 2.0f, Constants.PADDLE_RADIUS * 2.0f);
+        batch.draw(Assets.paddleRegions[Assets.paddleRegion1], computerPosition.x - Constants.PADDLE_RADIUS, computerPosition.y
+                - Constants.PADDLE_RADIUS, Constants.PADDLE_RADIUS * 2.0f, Constants.PADDLE_RADIUS * 2.0f);
+        batch.end();
 
 
         /* Render all graphics before do physics step */
@@ -156,10 +147,10 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
         fontBatch.enableBlending();
         fontBatch.begin();
         font.setScale(1.0f);
-        font.draw(fontBatch, "fps: " + Gdx.graphics.getFramesPerSecond(), -Utils.getHalfPlayfieldWidth()/Constants.SCALE +15f, -Utils.getHalfPlayfieldHeight()/Constants.SCALE + font.getCapHeight());
+        font.draw(fontBatch, "fps: " + Gdx.graphics.getFramesPerSecond(), -Utils.getHalfPlayfieldWidth() / Constants.SCALE + 15f, -Utils.getHalfPlayfieldHeight() / Constants.SCALE + font.getCapHeight());
         font.setScale(2.0f);
-        font.draw(fontBatch, String.valueOf(computerScore), Utils.getHalfPlayfieldWidth()/Constants.SCALE - 60f, font.getCapHeight() + 20f);
-        font.draw(fontBatch, String.valueOf(playerScore), Utils.getHalfPlayfieldWidth()/Constants.SCALE - 60f, - 20.0f);
+        font.draw(fontBatch, String.valueOf(computerScore), Utils.getHalfPlayfieldWidth() / Constants.SCALE - 60f, font.getCapHeight() + 20f);
+        font.draw(fontBatch, String.valueOf(playerScore), Utils.getHalfPlayfieldWidth() / Constants.SCALE - 60f, -20.0f);
         fontBatch.end();
 
 		/* Step the simulation with a fixed time step of 1/60 of a second */
@@ -184,7 +175,7 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
         world.setContactListener(this);
 
         this.camera = new OrthographicCamera(Utils.getWidth(), Utils.getHeight());
-        this.fontCamera = new OrthographicCamera(Utils.getWidth()/Constants.SCALE, Utils.getHeight()/Constants.SCALE);
+        this.fontCamera = new OrthographicCamera(Utils.getWidth() / Constants.SCALE, Utils.getHeight() / Constants.SCALE);
         batch.setProjectionMatrix(camera.combined);
         fontBatch.setProjectionMatrix(fontCamera.combined);
 
@@ -270,7 +261,7 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
                     boolean testResult;
 
 				/*
-				 * If the hit point is inside the fixture of the body, create a
+                 * If the hit point is inside the fixture of the body, create a
 				 * new MouseJoint.
 				 */
                     if (testResult = fixture.testPoint(touchPosition.x,
@@ -363,7 +354,7 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
         Body a = contact.getFixtureA().getBody();
         Body b = contact.getFixtureB().getBody();
 
-        if(a == ball || b == ball){
+        if (a == ball || b == ball) {
             if (a == goalLineUp || b == goalLineUp) {
                 Gdx.app.debug("GameScreen.beginContact", "goalLineUp");
                 state = GameState.BALL_REPOSITION_COMPUTER;

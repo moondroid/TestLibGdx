@@ -25,6 +25,7 @@ import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.mygdx.game.airhockey.Assets;
 import com.mygdx.game.airhockey.Box2DFactory;
 import com.mygdx.game.airhockey.Constants;
+import com.mygdx.game.airhockey.SoundManager;
 import com.mygdx.game.airhockey.Utils;
 
 import static com.mygdx.game.airhockey.Box2DFactory.*;
@@ -354,18 +355,33 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
         Body a = contact.getFixtureA().getBody();
         Body b = contact.getFixtureB().getBody();
 
+
         if (a == ball || b == ball) {
             if (a == goalLineUp || b == goalLineUp) {
                 Gdx.app.debug("GameScreen.beginContact", "goalLineUp");
                 state = GameState.BALL_REPOSITION_COMPUTER;
                 playerScore++;
+                SoundManager.playSound(SoundManager.goalSound);
             }
 
             if (a == goalLineDown || b == goalLineDown) {
                 Gdx.app.debug("GameScreen.beginContact", "goalLineDown");
                 state = GameState.BALL_REPOSITION_PLAYER;
                 computerScore++;
+                SoundManager.playSound(SoundManager.goalSound);
             }
+
+            if(a == player || b == player || a == computer || b == computer){
+                SoundManager.playSound(SoundManager.ballPaddleSound);
+            }
+
+            Short GroupA = a.getUserData() != null? (Short)a.getUserData() : Box2DFactory.GROUP_NONE;
+            Short GroupB = b.getUserData() != null? (Short)b.getUserData() : Box2DFactory.GROUP_NONE;
+
+            if(GroupA == Box2DFactory.GROUP_SCENERY || GroupB == Box2DFactory.GROUP_SCENERY){
+                SoundManager.playSound(SoundManager.ballPlaygroundSound);
+            }
+
         }
 
 

@@ -4,6 +4,7 @@ package com.mygdx.game.airhockey;
  * Created by Marco on 30/09/2014.
  */
 public class Constants {
+    public static float SCALE = 0.1f;
     public static float SCENERY_OFFSET;
     public static float SCENERY_CORNER_RADIUS;
     public static float BALL_RADIUS;
@@ -19,18 +20,18 @@ public class Constants {
 
     static {
 
-        WIDTH = 480.0f;
-        HEIGHT = 800.0f;
+        WIDTH = 480.0f * SCALE;
+        HEIGHT = 800.0f * SCALE;
 
-        GOAL_WIDTH = 180.0f;
-        SCENERY_OFFSET = 27.0f;
-        SCENERY_CORNER_RADIUS = 20.0f;
-        GOAL_OFFSET = 57.0f;
+        GOAL_WIDTH = 180.0f * SCALE;
+        SCENERY_OFFSET = 27.0f * SCALE;
+        SCENERY_CORNER_RADIUS = 20.0f * SCALE;
+        GOAL_OFFSET = 57.0f * SCALE;
 
         PADDLE_RADIUS = GOAL_WIDTH * 0.25f;
         BALL_RADIUS = PADDLE_RADIUS * 0.5f;
-        BALL_REPOSITION_OFFSET = 135.0f;
-        PLAYER_REPOSITION_OFFSET = 260.0f;
+        BALL_REPOSITION_OFFSET = 135.0f * SCALE;
+        PLAYER_REPOSITION_OFFSET = 260.0f * SCALE;
     }
 
     public Constants() {

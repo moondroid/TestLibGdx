@@ -35,7 +35,9 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
     private Box2DDebugRenderer debugRenderer;
 
     private SpriteBatch batch;
+    private SpriteBatch fontBatch;
     private OrthographicCamera camera;
+    private OrthographicCamera fontCamera;
     private World world;
 
     private Body cornerLineLeftDown;
@@ -117,7 +119,7 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
             batch.enableBlending();
             batch.begin();
             Color c = batch.getColor();
-            batch.setColor(c.r, c.g, c.b, .3f);//set alpha to 0.3
+            batch.setColor(c.r, c.g, c.b, 0.4f);//set alpha to 0.4
             batch.draw(Assets.playfields[0], -Utils.getHalfWidth(), -Utils.getHalfHeight(), Utils.getWidth(), Utils.getHeight());
             batch.setColor(c.r, c.g, c.b, 1f); //set alpha to 1
             batch.end();
@@ -127,14 +129,14 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
         debugRenderer.render(world, camera.combined);
 
         //draw fps and scores
-        batch.enableBlending();
-        batch.begin();
+        fontBatch.enableBlending();
+        fontBatch.begin();
         font.setScale(1.0f);
-        font.draw(batch, "fps: " + Gdx.graphics.getFramesPerSecond(), -Utils.getHalfPlayfieldWidth() +15f, -Utils.getHalfPlayfieldHeight() + font.getCapHeight());
+        font.draw(fontBatch, "fps: " + Gdx.graphics.getFramesPerSecond(), -Utils.getHalfPlayfieldWidth()/Constants.SCALE +15f, -Utils.getHalfPlayfieldHeight()/Constants.SCALE + font.getCapHeight());
         font.setScale(2.0f);
-        font.draw(batch, String.valueOf(computerScore), Utils.getHalfPlayfieldWidth() - 60f, font.getCapHeight() + 20f);
-        font.draw(batch, String.valueOf(playerScore), Utils.getHalfPlayfieldWidth() - 60f, - 20.0f);
-        batch.end();
+        font.draw(fontBatch, String.valueOf(computerScore), Utils.getHalfPlayfieldWidth()/Constants.SCALE - 60f, font.getCapHeight() + 20f);
+        font.draw(fontBatch, String.valueOf(playerScore), Utils.getHalfPlayfieldWidth()/Constants.SCALE - 60f, - 20.0f);
+        fontBatch.end();
 
 		/* Step the simulation with a fixed time step of 1/60 of a second */
         world.step(1 / 60f, 6, 2);
@@ -153,11 +155,14 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
         Gdx.input.setInputProcessor(this);
 
         this.batch = new SpriteBatch();
+        this.fontBatch = new SpriteBatch();
         this.world = new World(new Vector2(0.0f, 0.0f), true);
         world.setContactListener(this);
 
         this.camera = new OrthographicCamera(Utils.getWidth(), Utils.getHeight());
+        this.fontCamera = new OrthographicCamera(Utils.getWidth()/Constants.SCALE, Utils.getHeight()/Constants.SCALE);
         batch.setProjectionMatrix(camera.combined);
+        fontBatch.setProjectionMatrix(fontCamera.combined);
 
         this.cornerLineLeftUp = Box2DFactory.createCornerLineLeftUp(this.world);
         this.cornerLineLeftDown = Box2DFactory.createCornerLineLeftDown(this.world);
@@ -248,7 +253,7 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
                             touchPosition.y) && (fixture.getBody() == player || fixture.getBody() == computer)) {
                         mouseJointDef.bodyB = fixture.getBody();
                         mouseJointDef.target.set(touchPosition.x, touchPosition.y);
-                        mouseJointDef.maxForce = 10000.0f * fixture.getBody().getMass();
+                        mouseJointDef.maxForce = 200000.0f * fixture.getBody().getMass();
                         mouseJoint = (MouseJoint) world.createJoint(mouseJointDef);
                     }
 

@@ -139,10 +139,10 @@ public class Box2DFactory {
     public static Body createGoalLineUp(World world) {
         Vector2[] goalLineUpVertices = new Vector2[2];
 
-        goalLineUpVertices[0] = new Vector2(-Constants.GOAL_WIDTH/2.0f, Utils.getGoalLineHeight()+Constants.GOAL_OFFSET/2.0f);
-        goalLineUpVertices[1] = new Vector2(Constants.GOAL_WIDTH/2.0f, Utils.getGoalLineHeight()+Constants.GOAL_OFFSET/2.0f);
+        goalLineUpVertices[0] = new Vector2(-Constants.GOAL_WIDTH/2.0f, Utils.getGoalLineHeight()+Constants.GOAL_OFFSET*0.9f);
+        goalLineUpVertices[1] = new Vector2(Constants.GOAL_WIDTH/2.0f, Utils.getGoalLineHeight()+Constants.GOAL_OFFSET*0.9f);
 
-        FixtureDef fixtureDef = createFixture(createChainShape(goalLineUpVertices), 1.0f, 0.5f, 1.1f, false);
+        FixtureDef fixtureDef = createFixture(createChainShape(goalLineUpVertices), 1.0f, 0.5f, 0.0f, false);
         fixtureDef.filter.groupIndex = GROUP_GOALS;
         return createBody(world, BodyType.StaticBody, fixtureDef, new Vector2(0, 0));
     }
@@ -150,10 +150,10 @@ public class Box2DFactory {
     public static Body createGoalLineDown(World world) {
         Vector2[] goalLineDownVertices = new Vector2[2];
 
-        goalLineDownVertices[0] = new Vector2(-Constants.GOAL_WIDTH/2.0f, -Utils.getGoalLineHeight()-Constants.GOAL_OFFSET/2.0f);
-        goalLineDownVertices[1] = new Vector2(Constants.GOAL_WIDTH/2.0f, -Utils.getGoalLineHeight()-Constants.GOAL_OFFSET/2.0f);
+        goalLineDownVertices[0] = new Vector2(-Constants.GOAL_WIDTH/2.0f, -Utils.getGoalLineHeight()-Constants.GOAL_OFFSET*0.9f);
+        goalLineDownVertices[1] = new Vector2(Constants.GOAL_WIDTH/2.0f, -Utils.getGoalLineHeight()-Constants.GOAL_OFFSET*0.9f);
 
-        FixtureDef fixtureDef = createFixture(createChainShape(goalLineDownVertices), 1.0f, 0.5f, 1.1f, false);
+        FixtureDef fixtureDef = createFixture(createChainShape(goalLineDownVertices), 1.0f, 0.5f, 0.0f, false);
         fixtureDef.filter.groupIndex = GROUP_GOALS;
         return createBody(world, BodyType.StaticBody, fixtureDef, new Vector2(0, 0));
     }

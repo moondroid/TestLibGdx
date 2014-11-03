@@ -1,2 +1,2 @@
-include ':airhockey', ':bouncingball', ':images'
+include ':airhockey', ':bouncingball', ':images', ':tween-engine-api'
 include 'android', 'core', 'pong'

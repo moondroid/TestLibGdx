@@ -22,12 +22,18 @@ import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
+import com.mygdx.game.airhockey.AirHockey;
 import com.mygdx.game.airhockey.Assets;
 import com.mygdx.game.airhockey.Box2DFactory;
+import com.mygdx.game.airhockey.CameraAccessor;
 import com.mygdx.game.airhockey.ComputerAI;
 import com.mygdx.game.airhockey.Constants;
 import com.mygdx.game.airhockey.SoundManager;
 import com.mygdx.game.airhockey.Utils;
+
+import aurelienribon.tweenengine.Timeline;
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.equations.Quad;
 
 import static com.mygdx.game.airhockey.Box2DFactory.*;
 
@@ -36,8 +42,9 @@ import static com.mygdx.game.airhockey.Box2DFactory.*;
  */
 public class GameScreen extends InputAdapter implements Screen, ContactListener {
 
-    final Game game;
+    final AirHockey game;
     private boolean enableCpu;
+    private boolean allowScreenShake = true;
 
     /* Use Box2DDebugRenderer, which is a model renderer for debug purposes */
     private Box2DDebugRenderer debugRenderer;
@@ -101,7 +108,7 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
     private ComputerAI computerAI;
 
     public GameScreen(Game game, PlayMode mode) {
-        this.game = game;
+        this.game = (AirHockey) game;
         if (mode == PlayMode.SINGLE_PLAYER){
             enableCpu = true;
         }else {
@@ -111,6 +118,9 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
 
     @Override
     public void render(float delta) {
+
+        //game.tweenManager.update(delta);
+        screenShake(delta);
 
         /* Clear screen with a black background */
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -172,6 +182,7 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
         fontBatch.end();
 
         //computerAI.updateAutoplayer(delta);
+
 
 		/* Step the simulation with a fixed time step of 1/60 of a second */
         world.step(1 / 60f, 6, 2);
@@ -407,6 +418,35 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
     }
 
 
+    private void startScreenShake() {
+        if (allowScreenShake) {
+            //Gdx.input.vibrate(150);
+
+            Timeline.createSequence()
+                    .push(Tween.set(camera, CameraAccessor.POSITION_XY)
+                            .target(Utils.getWidth(), Utils.getHeight()))
+                    .push(Tween.to(camera, CameraAccessor.POSITION_XY, 0.035f)
+                            .targetRelative(0, 20)
+                            .ease(Quad.IN))
+                    .push(Tween.to(camera, CameraAccessor.POSITION_XY, 0.035f)
+                            .targetRelative(0, -20)
+                            .ease(Quad.IN))
+                    .push(Tween.to(camera, CameraAccessor.POSITION_XY, 0.0175f)
+                            .target(Utils.getWidth(), Utils.getHeight())
+                            .ease(Quad.IN))
+                    .repeatYoyo(2, 0)
+                    .start(game.tweenManager);
+        }
+    }
+
+    private void screenShake(float delta) {
+        if (game.tweenManager.containsTarget(camera)) {
+            game.tweenManager.update(delta);
+        } else {
+            camera.position.set(Utils.getWidth(), Utils.getHeight(), 0);
+        }
+    }
+
     /*
     * CONTACTLISTENER INTERFACE
     */
@@ -434,6 +474,7 @@ public class GameScreen extends InputAdapter implements Screen, ContactListener 
 
             if(a == player1 || b == player1 || a == player2 || b == player2){
                 SoundManager.playSound(SoundManager.ballPaddleSound);
+                startScreenShake();
             }
 
             Short GroupA = a.getUserData() != null? (Short)a.getUserData() : Box2DFactory.GROUP_NONE;

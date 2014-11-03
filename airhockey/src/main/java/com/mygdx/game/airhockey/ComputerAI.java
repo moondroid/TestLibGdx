@@ -7,7 +7,7 @@ import com.badlogic.gdx.physics.box2d.Body;
  * Created by Marco on 02/11/2014.
  */
 public class ComputerAI {
-
+    private static final int AI_MODE_NONE = 0;
     private static final int AI_MODE_ATTACK = 2;
     private static final int AI_MODE_DEFENCE = 1;
 
@@ -31,12 +31,12 @@ public class ComputerAI {
 
     private Vector2 player2_position;
 
-    public ComputerAI(Body computer, Body ball){
+    public ComputerAI(Body computer, Body ball, boolean enable){
 
         this.computer = computer;
         this.ball = ball;
 
-        ai_mode = AI_MODE_DEFENCE;
+        ai_mode = enable? AI_MODE_DEFENCE : AI_MODE_NONE;
         difficulty = EASY;
 
         autoMaxV = difficulty * 40f;
@@ -50,6 +50,8 @@ public class ComputerAI {
     }
 
     public void updateAutoplayer(float deltaTime) {
+
+        if (ai_mode == AI_MODE_NONE) return;
 
         Vector2 ballPosition = this.ball.getPosition();
         Vector2 ballVelocity = this.ball.getLinearVelocity();

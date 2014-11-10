@@ -35,7 +35,8 @@ public class LoadingScreen implements Screen {
             Assets.post_load();
             SoundManager.post_loadSound();
 
-            game.setScreen(new GameScreen(game, GameScreen.PlayMode.DOUBLE_PLAYER));
+            //game.setScreen(new GameScreen(game, GameScreen.PlayMode.DOUBLE_PLAYER));
+            game.setScreen(new MainMenuScreen(game));
         }
     }
 

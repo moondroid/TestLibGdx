@@ -39,6 +39,7 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(delta);
         stage.draw();
@@ -110,13 +111,13 @@ public class MainMenuScreen implements Screen {
 
         table.add(titleLabel).pad(30);
         table.row();
-        table.add(onePlayerButton).width(200).height(75);
+        table.add(onePlayerButton).width(300).height(75);
         table.row();
-        table.add(twoPlayerButton).width(200).height(75).padBottom(30);
+        table.add(twoPlayerButton).width(300).height(75).padBottom(30);
         table.row();
-        table.add(settingsButton).width(200).height(75);
+        table.add(settingsButton).width(300).height(75);
         table.row();
-        table.add(aboutButton).width(200).height(75);
+        table.add(aboutButton).width(300).height(75);
 
         stage.addActor(table);
 
